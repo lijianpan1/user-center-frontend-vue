@@ -1,112 +1,102 @@
 <template>
-  <a-row :wrap="false">
-    <a-col flex="200px">
-      <div class="header-bar">
-        <img class="logo" src="../assets/logo.png" alt="logo" />
-        <div class="title">路人用户中心</div>
-      </div>
-    </a-col>
-    <a-col flex="auto">
-      <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" />
-    </a-col>
-    <a-col flex="100px">
-      <div class="header-user">
-        <a-button type="primary">登 录</a-button>
-      </div>
-    </a-col>
-  </a-row>
+  <div id="globalHeader">
+    <a-row :wrap="false">
+      <a-col flex="200px">
+        <div class="title-bar">
+          <img class="logo" src="../assets/logo.png" alt="logo" />
+          <div class="title">路人用户中心</div>
+        </div>
+      </a-col>
+      <a-col flex="auto">
+        <a-menu
+          v-model:selectedKeys="current"
+          mode="horizontal"
+          :items="items"
+          @click="doMenuClick"
+        />
+      </a-col>
+      <a-col flex="80px">
+        <div class="user-login-status">
+          <div v-if="loginUserStore.loginUser.id">
+            {{ loginUserStore.loginUser.username ?? "无名" }}
+          </div>
+          <div v-else>
+            <a-button type="primary" href="/user/login">登录</a-button>
+          </div>
+        </div>
+      </a-col>
+    </a-row>
+  </div>
 </template>
-<script setup>
+
+<script lang="ts" setup>
 import { h, ref } from "vue";
-import {
-  MailOutlined,
-  AppstoreOutlined,
-  SettingOutlined,
-} from "@ant-design/icons-vue";
+import { CrownOutlined, HomeOutlined } from "@ant-design/icons-vue";
+import { MenuProps } from "ant-design-vue";
 import { useRouter } from "vue-router";
+import { useLoginUserStore } from "@/store/useLoginUserStore";
+
+const loginUserStore = useLoginUserStore();
 
 const router = useRouter();
+// 点击菜单后的路由跳转事件
+const doMenuClick = ({ key }: { key: string }) => {
+  router.push({
+    path: key,
+  });
+};
 
-const current = ref(["mail"]);
-
-router.afterEach((to) => {
+const current = ref<string[]>(["mail"]);
+// 监听路由变化，更新当前菜单选中状态
+router.afterEach((to, from, failure) => {
   current.value = [to.path];
 });
 
-const items = ref([
+const items = ref<MenuProps["items"]>([
   {
-    key: "home",
-    icon: () => h(MailOutlined),
-    label: "Home",
-    title: "Home",
+    key: "/",
+    icon: () => h(HomeOutlined),
+    label: "主页",
+    title: "主页",
   },
   {
-    key: "app",
-    icon: () => h(AppstoreOutlined),
-    label: "App",
-    title: "App",
+    key: "/user/login",
+    label: "用户登录",
+    title: "用户登录",
   },
   {
-    key: "sub1",
-    icon: () => h(SettingOutlined),
-    label: "Navigation Three - Submenu",
-    title: "Navigation Three - Submenu",
-    children: [
-      {
-        type: "group",
-        label: "Item 1",
-        children: [
-          {
-            label: "Option 1",
-            key: "setting:1",
-          },
-          {
-            label: "Option 2",
-            key: "setting:2",
-          },
-        ],
-      },
-      {
-        type: "group",
-        label: "Item 2",
-        children: [
-          {
-            label: "Option 3",
-            key: "setting:3",
-          },
-          {
-            label: "Option 4",
-            key: "setting:4",
-          },
-        ],
-      },
-    ],
+    key: "/user/register",
+    label: "用户注册",
+    title: "用户注册",
   },
   {
-    key: "alipay",
+    key: "/admin/userManage",
+    icon: () => h(CrownOutlined),
+    label: "用户管理",
+    title: "用户管理",
+  },
+  {
+    key: "others",
     label: h(
       "a",
-      {
-        href: "https://antdv.com",
-        target: "_blank",
-      },
-      "Navigation Four - Link"
+      { href: "https://www.codefather.cn", target: "_blank" },
+      "编程导航"
     ),
-    title: "Navigation Four - Link",
+    title: "编程导航",
   },
 ]);
 </script>
 
 <style scoped>
-.header-bar {
+.title-bar {
   display: flex;
   align-items: center;
 }
 
 .title {
-  color: #000000;
-  font-size: 16px;
-  margin-left: 10px;
+  color: black;
+  font-size: 18px;
+  margin-left: 16px;
 }
 
 .logo {

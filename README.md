@@ -1,4 +1,4 @@
-# user-center-frontend-vue
+# Vue3 用户中心网站（前端入门项目）
 
 ## Project setup
 ```
